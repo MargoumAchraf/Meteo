@@ -1,19 +1,17 @@
 import HomeComponet from '@/Screen/HomeComponent';
+import SearchPlace from '@/Screen/SearchComponent';
 import { Stack } from 'expo-router';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-export default function HomeScreen() {
+export default function SearchScreen() {
 
     return (
         <>
-            <Stack.Screen
-                            options={{
-                                headerShown: false,
-                                gestureEnabled: false,
-                            }}
-                        />
-            <HomeComponet></HomeComponet>
+            <Stack.Screen />
+
+            <SearchPlace></SearchPlace>
+
         </>
     );
 }

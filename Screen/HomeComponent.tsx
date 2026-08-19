@@ -1,12 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient'; // npm i expo-linear-gradient
 import HeaderNav from '@/components/HeaderNav/HeaderNav';
 import CurrentConditions from '@/components/CurrentConditions/CurrentConditions';
 import WeeklyOutlook from '@/components/WeeklyOutlook/WeeklyOutlook';
 import useCurrentLocation from '@/services/location';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import { Ionicons } from "@expo/vector-icons";
+import { router } from 'expo-router';
 export default function WeatherScreen() {
   const { location, city, errorMsg: locationError, loading: locationLoading } =
     useCurrentLocation();
@@ -38,6 +39,14 @@ export default function WeatherScreen() {
   return (
     <LinearGradient colors={['#1a1030', '#434625', '#804b21']} style={styles.container}>
       <SafeAreaView style={styles.SafeAreaView}>
+
+        <TouchableOpacity onPress={() => router.navigate('/(search)')} style={styles.iconContainer}>
+          <Ionicons
+            name="add-circle-outline"
+            color="white"
+            size={50}
+          />
+        </TouchableOpacity>
         <ScrollView
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.ScrollView}
@@ -72,4 +81,11 @@ const styles = StyleSheet.create({
   SafeAreaView: {
     flex: 1,
   },
+
+  iconContainer: {
+
+    alignItems: "flex-end",
+    justifyContent: "flex-end",
+    paddingRight: 20
+  }
 });
