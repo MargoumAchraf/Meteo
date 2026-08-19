@@ -7,7 +7,12 @@ export default function LoginScreen() {
 
     return (
         <>
-            <Stack.Screen options={{ title: 'Home' }} />
+            <Stack.Screen
+                            options={{
+                                headerShown: false,
+                                gestureEnabled: false,
+                            }}
+                        />
             <HomeComponet></HomeComponet>
         </>
     );

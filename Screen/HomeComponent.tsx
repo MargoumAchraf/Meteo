@@ -1,68 +1,75 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, Button } from 'react-native';
-import * as Location from 'expo-location';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient'; // npm i expo-linear-gradient
+import HeaderNav from '@/components/HeaderNav/HeaderNav';
+import CurrentConditions from '@/components/CurrentConditions/CurrentConditions';
+import WeeklyOutlook from '@/components/WeeklyOutlook/WeeklyOutlook';
+import useCurrentLocation from '@/services/location';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function WeatherScreen() {
-  const [location, setLocation] = useState<Location.LocationObjectCoords | null>(null);
-  const [city, setCity] = useState<string | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const { location, city, errorMsg: locationError, loading: locationLoading } =
+    useCurrentLocation();
 
-  const fetchLocation = async () => {
-    setLoading(true);
-    setErrorMsg(null);
-
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      setErrorMsg('Permission to access location was denied');
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const loc = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
-      });
-      setLocation(loc.coords);
-
-      // Reverse geocode → get city name
-      const results = await Location.reverseGeocodeAsync({
-        latitude: loc.coords.latitude,
-        longitude: loc.coords.longitude,
-      });
-
-      if (results.length > 0) {
-        const place = results[0];
-        setCity(place.city ?? place.subregion ?? place.region ?? 'Unknown location');
-      }
-    } catch (err) {
-      setErrorMsg('Could not fetch location');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchLocation();
-  }, []);
-
-  if (loading) return <ActivityIndicator />;
-  if (errorMsg)
+  if (locationLoading) {
     return (
-      <View>
-        <Text>{errorMsg}</Text>
-        <Button title="Retry" onPress={fetchLocation} />
-      </View>
-    );
 
+      <LinearGradient colors={['#1a1030', '#434625', '#804b21']} style={styles.container}>
+        <Text style={styles.message}>Loading location...</Text>
+      </LinearGradient>
+
+    );
+  }
+
+  if (locationError) {
+    return (
+      <LinearGradient colors={['#1a1030', '#434625', '#804b21']} style={styles.container}>
+        <Text style={styles.message}>{locationError}</Text>
+      </LinearGradient>
+    );
+  }
+  if (!location) {
+    return (
+      <LinearGradient colors={['#1a1030', '#434625', '#804b21']} style={styles.container}>
+        <Text style={styles.message}>Unable to determine location.</Text>
+      </LinearGradient>
+    );
+  }
   return (
-    <View>
-      {city && <Text>City: {city}</Text>}
-      {location && (
-        <Text>
-          Lat: {location.latitude.toFixed(4)}, Lon: {location.longitude.toFixed(4)}
-        </Text>
-      )}
-    </View>
+    <LinearGradient colors={['#1a1030', '#434625', '#804b21']} style={styles.container}>
+      <SafeAreaView style={styles.SafeAreaView}>
+        <ScrollView
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.ScrollView}
+        >
+          <HeaderNav city={city} location={location} />
+          <CurrentConditions location={location} />
+          <WeeklyOutlook location={location} />
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
+
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+
+  ScrollView: {
+    paddingHorizontal: 12,
+    paddingVertical: 20,
+    gap: 12,
+  },
+
+  message: {
+    color: '#F8FAFC',
+    padding: 24,
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  SafeAreaView: {
+    flex: 1,
+  },
+});

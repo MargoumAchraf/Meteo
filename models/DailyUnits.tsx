@@ -1,27 +1,28 @@
-class DailyUnits {
-  time: string;
-  temperature_2m_max: string;
-  temperature_2m_min: string;
-  precipitation_probability_max: string;
+export interface DailyWeatherRaw {
+    time: string;
+    temperature_2m_max: number;
+    temperature_2m_min: number;
+    precipitation_probability_max: number;
+}
 
-  constructor(
-    time: string,
-    temperature_2m_max: string,
-    temperature_2m_min: string,
-    precipitation_probability_max: string
-  ) {
-    this.time = time;
-    this.temperature_2m_max = temperature_2m_max;
-    this.temperature_2m_min = temperature_2m_min;
-    this.precipitation_probability_max = precipitation_probability_max;
-  }
+export interface DailyWeatherApiResponse {
+    time: string[];
+    temperature_2m_max: number[];
+    temperature_2m_min: number[];
+    precipitation_probability_max: number[];
+}
 
-  static fromJson(json: any): DailyUnits {
-    return new DailyUnits(
-      json.time,
-      json.temperature_2m_max,
-      json.temperature_2m_min,
-      json.precipitation_probability_max
-    );
-  }
+// Converts the API's parallel-array response into DailyWeatherRaw[],
+// one object per day, ready to .map() over in WeeklyOutlook
+export function mapDailyWeather(
+    raw: DailyWeatherApiResponse
+): DailyWeatherRaw[] {
+
+    return raw.time.map((date, i) => ({
+        time: date,
+        temperature_2m_max: raw.temperature_2m_max[i],
+        temperature_2m_min: raw.temperature_2m_min[i],
+        precipitation_probability_max:
+            raw.precipitation_probability_max[i],
+    }));
 }
