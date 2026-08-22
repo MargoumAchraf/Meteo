@@ -1,40 +1,69 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-    container: {
-        paddingHorizontal: 12,
-        paddingVertical: 20,
+    section: {
+        marginTop: 24,
     },
- 
-    card: {
-        width: 100,
-        height: 130,
-        borderRadius: 16,
-        backgroundColor: "#1c2138",
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.05)",
-        padding: 14,
-        alignItems: "center",
-        justifyContent: "space-between",
-    },
- 
-    day: {
-        fontSize: 13,
-        fontWeight: "600",
-        color: "#F8FAFC",
-    },
- 
-    temp: {
-        fontSize: 14,
-        color: "#F8FAFC",
-    },
- 
-    rain: {
+
+    label: {
+        marginLeft: 24,
+        marginBottom: 4,
         fontSize: 11,
+        letterSpacing: 1.5,
+        color: "#94A3B8",
+        fontFamily: "monospace",
+        textTransform: "uppercase",
+    },
+
+    container: {
+        paddingHorizontal: 24,
+    },
+
+    row: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: "rgba(255,255,255,0.06)",
+    },
+
+    rowLast: {
+        borderBottomWidth: 0,
+    },
+
+    day: {
+        width: 70,
+        fontSize: 15,
+        fontWeight: "500",
+        color: "#F8FAFC",
+    },
+
+    icon: {
+        flex: 1,
+        fontSize: 16,
+        textAlign: "center",
+    },
+
+    temps: {
+        flexDirection: "row",
+        width: 80,
+        justifyContent: "flex-end",
+        gap: 12,
+    },
+
+    tempLow: {
+        fontSize: 14,
         color: "#94A3B8",
         fontFamily: "monospace",
     },
- 
+
+    tempHigh: {
+        fontSize: 14,
+        fontWeight: "600",
+        color: "#F8FAFC",
+        fontFamily: "monospace",
+    },
+
     message: {
         color: "#F8FAFC",
         padding: 24,

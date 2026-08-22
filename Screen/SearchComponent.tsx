@@ -1,5 +1,4 @@
-import { router } from 'expo-router';
-import { Route } from 'expo-router/build/Route';
+import { router, Stack } from 'expo-router';
 import React, { useState } from 'react';
 import {
     View,
@@ -8,15 +7,16 @@ import {
     FlatList,
     Pressable,
     StyleSheet,
-    Linking,
+    TouchableOpacity,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 type Place = {
     place_id: string;
     description: string;
 };
-
-
 
 export default function SearchPlace() {
     const [search, setSearch] = useState('');
@@ -59,17 +59,11 @@ export default function SearchPlace() {
 
         console.log('Selected:', place.place_id);
 
-        // Open Google Maps
-        const mapsUrl =
-            `https://www.google.com/maps/search/?api=1&query=` +
-            encodeURIComponent(place.description);
-
         const detailsUrl =
             `https://maps.googleapis.com/maps/api/place/details/json?` +
             `place_id=${encodeURIComponent(place.place_id)}` +
             `&fields=geometry,name` +
             `&key=${GOOGLE_API_KEY}`;
-
 
         const response = await fetch(detailsUrl);
         const data = await response.json();
@@ -87,6 +81,7 @@ export default function SearchPlace() {
         console.log('Place:', data.result.name);
         console.log('Latitude:', latitude);
         console.log('Longitude:', longitude);
+
         router.push({
             pathname: '/(City)/Inex',
             params: {
@@ -95,91 +90,109 @@ export default function SearchPlace() {
                 city: data.result.name,
             },
         });
-
     };
 
     return (
-        <View style={styles.container}>
+        <LinearGradient colors={['#1a1030', '#434625', '#804b21']} style={styles.gradient}>
 
-            {/* Search input */}
-            <View style={styles.searchContainer}>
-                <Text style={styles.icon}>🔍</Text>
 
-                <TextInput
-                    style={styles.input}
-                    placeholder="Search city..."
-                    value={search}
-                    onChangeText={searchPlaces}
-                    autoCapitalize="words"
+            <SafeAreaView style={styles.container}>
+
+
+                <Stack.Screen
+                    options={{
+                        headerShown: false,
+                        gestureEnabled: false,
+                    }}
                 />
-            </View>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => router.back()}
+                >
+                    <Ionicons name="chevron-back" size={24} color="white" />
+                </TouchableOpacity>
+                {/* Search input */}
+                <View style={styles.searchContainer}>
+                    <Text style={styles.icon}>🔍</Text>
 
-            {/* Places */}
-            {places.length > 0 && (
-                <View style={styles.results}>
-                    <FlatList
-                        data={places}
-                        keyExtractor={(item) => item.place_id}
-                        keyboardShouldPersistTaps="handled"
-                        renderItem={({ item }) => (
-                            <Pressable
-                                style={styles.place}
-                                onPress={() => selectPlace(item)}
-                            >
-                                <Text style={styles.locationIcon}>📍</Text>
-
-                                <View>
-                                    <Text style={styles.placeName}>
-                                        {item.description}
-                                    </Text>
-                                </View>
-                            </Pressable>
-                        )}
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Search city..."
+                        placeholderTextColor="#94A3B8"
+                        value={search}
+                        onChangeText={searchPlaces}
+                        autoCapitalize="words"
                     />
                 </View>
-            )}
 
-            {/* Selected place */}
-            {selectedPlace !== '' && (
-                <View style={styles.selected}>
-                    <Text style={styles.selectedTitle}>
-                        Selected location
-                    </Text>
+                {/* Places */}
+                {places.length > 0 && (
+                    <View style={styles.results}>
+                        <FlatList
+                            data={places}
+                            keyExtractor={(item) => item.place_id}
+                            keyboardShouldPersistTaps="handled"
+                            renderItem={({ item }) => (
+                                <Pressable
+                                    style={styles.place}
+                                    onPress={() => selectPlace(item)}
+                                >
+                                    <Text style={styles.locationIcon}>📍</Text>
 
-                    <Text style={styles.selectedPlace}>
-                        📍 {selectedPlace}
-                    </Text>
-                </View>
-            )}
+                                    <View>
+                                        <Text style={styles.placeName}>
+                                            {item.description}
+                                        </Text>
+                                    </View>
+                                </Pressable>
+                            )}
+                        />
+                    </View>
+                )}
 
-        </View>
+                {/* Selected place */}
+                {selectedPlace !== '' && (
+                    <View style={styles.selected}>
+                        <Text style={styles.selectedTitle}>
+                            Selected location
+                        </Text>
+
+                        <Text style={styles.selectedPlace}>
+                            📍 {selectedPlace}
+                        </Text>
+                    </View>
+                )}
+            </SafeAreaView>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
+    gradient: {
+        flex: 1,
+    },
+
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: '#f5f7fa',
     },
+    backButton: {
 
+        width: 40,
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+
+    },
     searchContainer: {
         height: 55,
-        backgroundColor: '#fff',
+        backgroundColor: '#1c2138',
         borderRadius: 15,
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: 15,
-
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-
-        elevation: 3,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.05)',
     },
 
     icon: {
@@ -190,13 +203,16 @@ const styles = StyleSheet.create({
     input: {
         flex: 1,
         fontSize: 16,
+        color: '#F8FAFC',
     },
 
     results: {
-        backgroundColor: '#fff',
+        backgroundColor: '#1c2138',
         marginTop: 8,
         borderRadius: 15,
         overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.05)',
     },
 
     place: {
@@ -204,7 +220,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 15,
         borderBottomWidth: 1,
-        borderBottomColor: '#eee',
+        borderBottomColor: 'rgba(255,255,255,0.05)',
     },
 
     locationIcon: {
@@ -214,24 +230,27 @@ const styles = StyleSheet.create({
 
     placeName: {
         fontSize: 15,
-        color: '#222',
+        color: '#F8FAFC',
     },
 
     selected: {
         marginTop: 30,
-        backgroundColor: '#fff',
+        backgroundColor: '#1c2138',
         padding: 20,
         borderRadius: 15,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.05)',
     },
 
     selectedTitle: {
         fontSize: 14,
-        color: '#777',
+        color: '#94A3B8',
         marginBottom: 8,
     },
 
     selectedPlace: {
         fontSize: 18,
         fontWeight: '600',
+        color: '#F8FAFC',
     },
 });
